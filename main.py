@@ -8,6 +8,7 @@ class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
         Form.resize(1144, 787)
+        Form.setWindowFlags(QtCore.Qt.FramelessWindowHint)
         self.verticalLayout = QtWidgets.QVBoxLayout(Form)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setSpacing(0)
@@ -198,7 +199,7 @@ class Ui_Form(object):
         self.webEngineView.page().setBackgroundColor(QtGui.QColor(45, 45, 45, 255))
         self.webEngineView.setObjectName('webEngineView')
         self.verticalLayout_4.addWidget(self.webEngineView)
-
+        
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
@@ -224,10 +225,13 @@ class WebPage(QtWidgets.QTabWidget, Ui_Form):
                 super(WebPage, self).__init__(parent = parent)
                 self.setupUi(self)
                 self.parent = parent
+                # Создание стартовой страницы
+                self.webEngineView.setUrl(QtCore.QUrl('https://ya.ru/'))
                 # Закрытие окна
                 self.pushButton_exit.clicked.connect(sys.exit)
                 self.pushButton_fullscreen.clicked.connect(self.winShowMaximized)
                 self.lineEdit.returnPressed.connect(self.load)
+                self.pushButton_enter.clicked.connect(self.load)
         
         def load(self):
                 url = QtCore.QUrl.fromUserInput(self.lineEdit.text())
@@ -241,11 +245,6 @@ class WebPage(QtWidgets.QTabWidget, Ui_Form):
                         self.parent.showNormal()
                 
                 
-
-
-
-
-
 
 
 
