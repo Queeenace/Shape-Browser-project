@@ -2,15 +2,12 @@ import sys
 from PyQt5.QtWidgets import QWidget, QApplication
 from PyQt5 import uic
 from PyQt5 import QtGui, QtWidgets, QtCore
-from PyQt5.QtWidgets import *
-from PyQt5.QtWebEngineWidgets import *
+from PyQt5.QtWebEngineWidgets import QWebEnginePage, QWebEngineView
 
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
-        Form.resize(800, 550)
-        Form.setWindowFlags(QtCore.Qt.FramelessWindowHint)
-        Form.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
+        Form.resize(1144, 787)
         self.verticalLayout = QtWidgets.QVBoxLayout(Form)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setSpacing(0)
@@ -35,8 +32,8 @@ class Ui_Form(object):
 "    border-top-left-radius:20px;\n"
 "}\n"
 "QPushButton{\n"
-"    background-color:rgb(0,0,0);\n"
-"    color:rgb(255,255,255);\n"
+"    background-color:rgb(0,0,0,0);\n"
+"    color:rgb(144,144,144);\n"
 "    font:bold;\n"
 "    font-size:15px;\n"
 "    font-family:entypo;\n"
@@ -173,12 +170,18 @@ class Ui_Form(object):
         self.horizontalLayout_2.addWidget(self.pushButton_enter)
         self.verticalLayout_3.addLayout(self.horizontalLayout_2)
         self.verticalLayout_2.addWidget(self.widget_2)
-        self.label_2 = QtWidgets.QLabel(self.widget)
-        self.label_2.setMinimumSize(QtCore.QSize(0, 20))
-        self.label_2.setStyleSheet("background-color:rgb(67, 67, 67)")
-        self.label_2.setText("")
-        self.label_2.setObjectName("label_2")
-        self.verticalLayout_2.addWidget(self.label_2)
+        self.widget_3 = QtWidgets.QWidget(self.widget)
+        self.widget_3.setStyleSheet("background-color:rgb(45, 45, 45);")
+        self.widget_3.setObjectName("widget_3")
+        self.verticalLayout_5 = QtWidgets.QVBoxLayout(self.widget_3)
+        self.verticalLayout_5.setSpacing(0)
+        self.verticalLayout_5.setObjectName("verticalLayout_5")
+        self.verticalLayout_4 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_4.setContentsMargins(-1, -1, -1, 1)
+        self.verticalLayout_4.setSpacing(0)
+        self.verticalLayout_4.setObjectName("verticalLayout_4")
+        self.verticalLayout_5.addLayout(self.verticalLayout_4)
+        self.verticalLayout_2.addWidget(self.widget_3)
         self.label = QtWidgets.QLabel(self.widget)
         self.label.setMinimumSize(QtCore.QSize(0, 45))
         self.label.setMaximumSize(QtCore.QSize(16777215, 45))
@@ -190,6 +193,11 @@ class Ui_Form(object):
         self.label.setObjectName("label")
         self.verticalLayout_2.addWidget(self.label)
         self.verticalLayout.addWidget(self.widget)
+
+        self.webEngineView = QWebEngineView()
+        self.webEngineView.page().setBackgroundColor(QtGui.QColor(45, 45, 45, 255))
+        self.webEngineView.setObjectName('webEngineView')
+        self.verticalLayout_4.addWidget(self.webEngineView)
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -210,11 +218,32 @@ class Ui_Form(object):
         self.pushButton_enter.setText(_translate("Form", "↳"))
         self.label.setText(_translate("Form", "Developed by Queeenace"))
 
+
 class WebPage(QtWidgets.QTabWidget, Ui_Form):
-    clicked = QtCore.pyqtSignal(int)
-    def __init__(self, parent = None):
-        super(WebPage, self).__init__(parent = parent)
-        self.setupUi(self)
+        def __init__(self, parent = None):
+                super(WebPage, self).__init__(parent = parent)
+                self.setupUi(self)
+                self.parent = parent
+                # Закрытие окна
+                self.pushButton_exit.clicked.connect(sys.exit)
+                self.pushButton_fullscreen.clicked.connect(self.winShowMaximized)
+                self.lineEdit.returnPressed.connect(self.load)
+        
+        def load(self):
+                url = QtCore.QUrl.fromUserInput(self.lineEdit.text())
+                if url.isValid():
+                        self.webEngineView.load(url)
+        # Функция сворачивания окна
+        def winShowMaximized(self):
+                if self.pushButton_fullscreen.isChecked():
+                        self.parent.showMaximized()
+                else:
+                        self.parent.showNormal()
+                
+                
+
+
+
 
 
 
@@ -223,8 +252,7 @@ class WebPage(QtWidgets.QTabWidget, Ui_Form):
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
-    Form = QtWidgets.QTabWidget()
-    ui = Ui_Form()
-    ui.setupUi(Form)
+    Form = QtWidgets.QWidget()
+    ui = WebPage(Form)
     Form.show()
     sys.exit(app.exec_())
